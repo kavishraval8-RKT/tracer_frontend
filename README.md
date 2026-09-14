@@ -1,36 +1,80 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Tracer - Frontend Application
+
+A complete, multi-page Next.js application for Tracer, an AI-powered KiCad plugin for PCB design.
+
+## Tech Stack
+
+- **Framework**: Next.js 16.3.5 (App Router)
+- **Language**: TypeScript 5
+- **Styling**: Tailwind CSS 4
+- **Animations**: Framer Motion 13.2.0
+- **Fonts**: Geist Sans & Geist Mono
+
+## Design Language
+
+**Stealth AI / Cluely Aesthetic (Brutalist, minimalist)**
+
+- Background: `#000000` (Pitch black)
+- Primary Text: `#FFFFFF` (Pure white)
+- Secondary Text: `#888888` (Slate gray)
+- Borders: `#222222` (Dark gray, 1px solid)
+- Border radius: Max 4px (sharp edges)
 
 ## Getting Started
 
-First, run the development server:
-
 ```bash
+# Install dependencies
+npm install
+
+# Run development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+
+# Build for production
+npm run build
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) to view the application.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Pages Implemented (14 Total)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+✅ **Home** (`/`) - Hero, interactive console, AI models, capabilities
+✅ **About** (`/about`) - Company story, values, timeline
+✅ **Blog** (`/blog`) - Article listings
+✅ **Pricing** (`/pricing`) - 4-tier pricing with Monthly/Yearly toggle
+✅ **Download** (`/download`) - OS-specific downloads (Windows, macOS, Linux)
+✅ **Instructions** (`/instructions`) - Installation guide
+✅ **Contact** (`/contact`) - Contact form
+✅ **KiCad AI** (`/kicad-ai`) - Product details
+✅ **Billing** (`/billing`) - Subscription management
+✅ **Login** (`/login`) - User authentication
+✅ **Register** (`/register`) - Account creation
+✅ **Terms** (`/terms`) - Terms of Service
+✅ **Privacy** (`/privacy`) - Privacy Policy
+✅ **Refund** (`/refund`) - Refund Policy
 
-## Learn More
+## Components
 
-To learn more about Next.js, take a look at the following resources:
+- `Header.tsx` - Global navigation with mobile menu
+- `Footer.tsx` - Footer with Product, Company, Connect sections
+- `InteractiveConsole.tsx` - Terminal-style AI console
+- `ModelGrid.tsx` - AI model cards (Claude 4, GPT-5, Gemini 3, Ohm)
+- `CapabilitiesGrid.tsx` - Feature showcase
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Key Features
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- **Zero Broken Links**: Every href points to a real, implemented page
+- **Exact Data Match**: All content uses exact specifications
+- **Mobile Responsive**: Works on all screen sizes
+- **Brutalist Design**: Clean, minimal, high-contrast UI
+- **21st.dev Ready**: Built for easy integration of advanced animations
 
-## Deploy on Vercel
+## AI Models Supported
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. **Claude 4** (ANTHROPIC)
+2. **GPT-5** (OPENAI)
+3. **Gemini 3** (GOOGLE)
+4. **Ohm** - formerly Electrode 1.0 (TRACER / OUR MODEL)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+**© 2024 - 2026 Tracer. All rights reserved.**
