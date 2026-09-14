@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Staged backend code; not part of the running site until copied into place (see backend/README.md).
+    "backend/**",
   ]),
 ]);
 
