@@ -149,7 +149,7 @@ export default function Hero() {
             variants={item}
             className="mt-5 text-xs text-white/85 [text-shadow:0_1px_8px_rgba(23,76,160,0.35)]"
           >
-            Free Hobby plan · KiCad 7 &amp; 8
+            Free Hobby plan · KiCad 10
           </motion.p>
         </div>
 

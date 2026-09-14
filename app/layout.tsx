@@ -3,6 +3,7 @@ import { EB_Garamond, Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import MotionProvider from "@/components/MotionProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -19,9 +20,28 @@ const garamond = EB_Garamond({
   subsets: ["latin"],
 });
 
+const description =
+  "An AI KiCad plugin for schematics, PCB routing, and DRC. Describe your board in plain language, right inside the editor.";
+
 export const metadata: Metadata = {
-  title: "Tracer | AI Circuit Copilot for KiCad",
-  description: "An AI KiCad plugin for schematics, PCB routing, and DRC. Describe your board in plain language—right inside the editor.",
+  // Set NEXT_PUBLIC_SITE_URL to the production domain so share images resolve to absolute URLs.
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"),
+  title: {
+    default: "Tracer | AI Copilot for KiCad",
+    template: "%s · Tracer",
+  },
+  description,
+  openGraph: {
+    siteName: "Tracer",
+    title: "Tracer | AI Copilot for KiCad",
+    description,
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Tracer | AI Copilot for KiCad",
+    description,
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
@@ -31,9 +51,11 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${geistSans.variable} ${geistMono.variable} ${garamond.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col bg-[#F8F9FA] text-slate-600 antialiased">
-        <Header />
-        <main className="flex-1">{children}</main>
-        <Footer />
+        <MotionProvider>
+          <Header />
+          <main className="flex-1">{children}</main>
+          <Footer />
+        </MotionProvider>
       </body>
     </html>
   );

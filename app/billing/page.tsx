@@ -1,47 +1,47 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import { CreditCard } from "lucide-react";
+import { primaryCtaClass } from "@/components/ui/PrimaryCta";
+
+export const metadata: Metadata = {
+  title: "Billing",
+  description: "Manage your Tracer plan and payment details.",
+  robots: { index: false },
+};
+
 export default function BillingPage() {
+  // ponytail: no auth yet, so every visitor sees the signed-out state.
+  // Once sessions exist, protect this route in proxy.ts and render the real plan, usage, and subscription controls.
   return (
-    <div>
-      <section className="mx-auto max-w-7xl px-6 py-24 lg:px-8 lg:py-32">
-        <h1 className="mb-6 text-5xl font-semibold tracking-tight text-slate-900 lg:text-7xl">
-          Billing
-        </h1>
-        <p className="mb-16 max-w-3xl text-xl text-slate-600 lg:text-2xl">
-          Manage your subscription and payment information.
+    <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center px-6 py-16">
+      <div className="w-full max-w-lg rounded-[2rem] border border-black/[0.04] bg-white p-8 text-center shadow-[0_8px_30px_rgb(0,0,0,0.04)] sm:p-12">
+        <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 text-white shadow-[0_12px_30px_-8px_rgba(59,130,246,0.6)]">
+          <CreditCard className="h-6 w-6" aria-hidden />
+        </span>
+        <h1 className="mt-6 text-3xl font-semibold tracking-tight text-slate-900">Billing</h1>
+        <p className="mx-auto mt-3 max-w-sm leading-relaxed text-slate-600">
+          Sign in to see your plan and usage and to manage your subscription.
         </p>
 
-        <div className="mx-auto max-w-3xl">
-          <div className="rounded-2xl border border-black/[0.04] bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-8">
-            <h2 className="mb-6 text-2xl font-semibold tracking-tight text-slate-900">
-              Current Plan: Hobby (Free)
-            </h2>
-            <p className="mb-8 text-slate-600">
-              Upgrade to unlock higher limits and priority support.
-            </p>
-
-            <div className="space-y-4">
-              <div className="flex items-center justify-between border-b border-slate-200 pb-4">
-                <span className="text-slate-600">Monthly Usage</span>
-                <span className="font-mono text-slate-900">24 / 100 requests</span>
-              </div>
-              <div className="flex items-center justify-between border-b border-slate-200 pb-4">
-                <span className="text-slate-600">Billing Cycle</span>
-                <span className="font-mono text-slate-900">N/A (Free Plan)</span>
-              </div>
-              <div className="flex items-center justify-between pb-4">
-                <span className="text-slate-600">Next Payment</span>
-                <span className="font-mono text-slate-900">—</span>
-              </div>
-            </div>
-
-            <a
-              href="/pricing"
-              className="mt-8 block rounded-full bg-blue-600 py-3 text-center text-sm font-semibold text-white shadow-[0_4px_14px_0_rgb(37,99,235,0.39)] transition-all hover:bg-blue-700"
-            >
-              Upgrade Plan
-            </a>
-          </div>
+        <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
+          <Link href="/login" className={`${primaryCtaClass} justify-center px-6 py-2.5 text-sm`}>
+            Sign in
+          </Link>
+          <Link
+            href="/pricing"
+            className="inline-flex items-center justify-center rounded-[10px] border border-slate-200 bg-white px-6 py-2.5 text-sm font-semibold text-slate-900 shadow-sm transition-colors hover:border-slate-300 hover:bg-slate-50"
+          >
+            View plans
+          </Link>
         </div>
-      </section>
+
+        <p className="mt-8 border-t border-slate-100 pt-6 text-sm text-slate-500">
+          Billing questions? Email{" "}
+          <a href="mailto:hello@tracer.dev" className="font-medium text-blue-600 hover:text-blue-700">
+            hello@tracer.dev
+          </a>
+        </p>
+      </div>
     </div>
   );
 }

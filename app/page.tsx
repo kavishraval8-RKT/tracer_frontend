@@ -2,6 +2,7 @@ import Hero from "@/components/Hero";
 import HowTracerHelps from "@/components/HowTracerHelps";
 import InControl from "@/components/InControl";
 import PromptToParts from "@/components/PromptToParts";
+import AstraBridge from "@/components/AstraBridge";
 import TrustMetrics from "@/components/TrustMetrics";
 import FAQ from "@/components/FAQ";
 
@@ -12,6 +13,7 @@ export default function Home() {
       <HowTracerHelps />
       <InControl />
       <PromptToParts />
+      <AstraBridge />
       <TrustMetrics />
       <FAQ />
     </>

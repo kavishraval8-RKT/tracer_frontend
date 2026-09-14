@@ -5,9 +5,9 @@ const metrics = [
     detail: "Rule checks run on every edit, before anything is written to the board.",
   },
   {
-    value: "v7 & v8",
+    value: "v10",
     label: "Native Support",
-    detail: "Runs as a plugin inside KiCad 7 and 8. No exports, no separate web app.",
+    detail: "Runs as a plugin inside KiCad 10. No exports, no separate web app.",
   },
   {
     value: "100%",

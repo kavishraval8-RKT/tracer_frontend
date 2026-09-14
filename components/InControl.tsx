@@ -58,8 +58,7 @@ function DruLine({ line }: { line: string }) {
 }
 
 const stack = [
-  { name: "KiCad 7", dot: "bg-[#314CB0]" },
-  { name: "KiCad 8", dot: "bg-[#314CB0]" },
+  { name: "KiCad 10", dot: "bg-[#314CB0]" },
   { name: "Freerouting", dot: "bg-red-500" },
   { name: "Claude", dot: "bg-[#D97757]" },
   { name: "GPT-5", dot: "bg-[#10A37F]" },
@@ -193,7 +192,7 @@ export default function InControl() {
       </div>
 
       <motion.div {...reveal()} className="mx-auto mt-20 max-w-4xl text-center">
-        <p className="text-xs font-medium uppercase tracking-[0.2em] text-slate-500">Works with your stack</p>
+        <p className="text-sm text-slate-500">Works with your stack</p>
         <div className="mt-6 flex flex-wrap items-center justify-center gap-x-10 gap-y-4">
           {stack.map((s) => (
             <span key={s.name} className="flex items-center gap-2 text-[15px] font-medium text-slate-700">

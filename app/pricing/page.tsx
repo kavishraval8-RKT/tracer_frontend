@@ -2,171 +2,267 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { motion } from "framer-motion";
+import { Check } from "lucide-react";
+import { reveal } from "@/lib/motion";
+import { primaryCtaClass } from "@/components/ui/PrimaryCta";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { PAID_PLANS, planQuery, type Billing, type PaidPlanId } from "@/lib/plans";
+
+type Tier = {
+  name: string;
+  price: { monthly: string; yearly: string };
+  note: string;
+  description: string;
+  features: string[];
+  cta: string;
+  href: string;
+  plan?: PaidPlanId;
+  highlighted?: boolean;
+};
+
+const tiers: Tier[] = [
+  {
+    name: "Hobby",
+    price: { monthly: "Free", yearly: "Free" },
+    note: "No credit card required",
+    description: "Perfect for learning and experimentation",
+    features: ["Download plugin", "Limited hosted assistant (fair use)", "Community support"],
+    cta: "Get started",
+    href: "/download",
+  },
+  {
+    name: PAID_PLANS.basic.name,
+    price: PAID_PLANS.basic.price,
+    note: "",
+    description: "For regular users and small projects",
+    features: ["Everything in Hobby", "Hosted AI assistant inside KiCad", "Higher limits for everyday questions"],
+    cta: "Start Basic",
+    href: "/register",
+    plan: "basic",
+  },
+  {
+    name: PAID_PLANS.pro.name,
+    price: PAID_PLANS.pro.price,
+    note: "",
+    description: "Best for professional daily use",
+    features: [
+      "Everything in Basic",
+      "Stronger limits for professional daily use",
+      "Early access to new features",
+      "Priority support",
+    ],
+    cta: "Start Pro",
+    href: "/register",
+    plan: "pro",
+    highlighted: true,
+  },
+  {
+    name: "Enterprise",
+    price: { monthly: "Custom", yearly: "Custom" },
+    note: "Tailored to your team",
+    description: "Custom solutions for teams and organizations",
+    features: ["Custom seats and AI quotas", "Custom gateway limits", "Dedicated support", "SLA guarantees"],
+    cta: "Contact sales",
+    href: "/contact",
+  },
+];
+
+const secondaryButton =
+  "inline-flex w-full items-center justify-center rounded-[10px] border border-slate-200 bg-white py-2.5 text-sm font-semibold text-slate-900 shadow-sm transition-colors hover:border-slate-300 hover:bg-slate-50";
+
+const faqs = [
+  {
+    q: "Can I start for free?",
+    a: <>Yes. The Hobby plan needs no credit card and includes the plugin with a limited hosted assistant under fair use.</>,
+  },
+  {
+    q: "What's the difference between Basic and Pro?",
+    a: (
+      <>
+        Basic adds the hosted AI assistant inside KiCad with higher limits for everyday questions. Pro raises those
+        limits for professional daily use and adds early access to new features and priority support.
+      </>
+    ),
+  },
+  {
+    q: "Can I cancel anytime?",
+    a: <>Yes. Cancel from your billing page at any time. Cancellation takes effect at the end of the current billing cycle.</>,
+  },
+  {
+    q: "Is there a refund policy?",
+    a: (
+      <>
+        Paid plans come with a 30-day money-back guarantee. See the{" "}
+        <Link href="/refund" className="font-medium text-blue-600 hover:text-blue-700">
+          refund policy
+        </Link>{" "}
+        for details.
+      </>
+    ),
+  },
+  {
+    q: "What does Enterprise include?",
+    a: <>Custom seats and AI quotas, custom gateway limits, dedicated support, and SLA guarantees.</>,
+  },
+];
+
+function priceNote(tier: Tier, billing: Billing) {
+  if (!tier.plan) return tier.note;
+  return billing === "yearly" ? "Billed yearly · 2 months free" : "Billed monthly";
+}
 
 export default function PricingPage() {
-  const [isYearly, setIsYearly] = useState(false);
-
-  const tiers = [
-    {
-      name: "Hobby",
-      price: { monthly: "Free", yearly: "Free" },
-      description: "Perfect for learning and experimentation",
-      features: [
-        "No credit card required",
-        "Download plugin",
-        "Limited hosted assistant (fair use)",
-        "Community support",
-      ],
-      cta: "Get Started",
-      href: "/download",
-      highlighted: false,
-    },
-    {
-      name: "Basic",
-      price: { monthly: "€10", yearly: "€100" },
-      description: "For regular users and small projects",
-      features: [
-        "Everything in Hobby",
-        "Hosted AI assistant inside KiCad",
-        "Higher limits for everyday questions",
-      ],
-      cta: "Start Basic",
-      href: "/register",
-      highlighted: false,
-    },
-    {
-      name: "Pro",
-      price: { monthly: "€20", yearly: "€200" },
-      description: "Best for professional daily use",
-      badge: "Recommended",
-      features: [
-        "Everything in Basic",
-        "Stronger limits for professional daily use",
-        "Early access to new features",
-        "Priority support",
-      ],
-      cta: "Start Pro",
-      href: "/register",
-      highlighted: true,
-    },
-    {
-      name: "Enterprise",
-      price: { monthly: "Custom", yearly: "Custom" },
-      description: "Custom solutions for teams and organizations",
-      features: [
-        "Custom seats and AI quotas",
-        "Custom gateway limits",
-        "Dedicated support",
-        "SLA guarantees",
-      ],
-      cta: "Contact Sales",
-      href: "/contact",
-      highlighted: false,
-    },
-  ];
+  const [billing, setBilling] = useState<Billing>("monthly");
 
   return (
-    <div>
-      <section className="mx-auto max-w-7xl px-6 py-24 lg:px-8 lg:py-32">
-        <div className="text-center">
-          <h1 className="mb-6 text-5xl font-semibold tracking-tight text-slate-900 lg:text-7xl">
-            Tracer Cloud
-          </h1>
-          <p className="mx-auto mb-12 max-w-3xl text-xl leading-relaxed text-slate-600 lg:text-2xl">
-            Hosted AI for the Circuit Copilot KiCad plugin.
-          </p>
+    <div className="px-6 pt-20 pb-8 sm:pt-28">
+      <motion.div {...reveal()} className="mx-auto max-w-3xl text-center">
+        <h1 className="text-balance text-5xl font-semibold tracking-tight text-slate-900 sm:text-6xl">
+          Simple pricing <span className="text-slate-500">for every board.</span>
+        </h1>
+        <p className="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-slate-600">
+          Hosted AI for the Tracer KiCad plugin. Start free and upgrade when you need more.
+        </p>
 
-          <div className="inline-flex items-center gap-4 rounded-full border border-slate-200 bg-slate-50 p-1">
+        <div
+          role="group"
+          aria-label="Billing period"
+          className="mt-10 inline-flex items-center rounded-full bg-white p-1 shadow-sm ring-1 ring-black/[0.06]"
+        >
+          {(["monthly", "yearly"] as const).map((b) => (
             <button
-              onClick={() => setIsYearly(false)}
-              className={`rounded-full px-6 py-2 text-sm font-medium transition-all ${
-                !isYearly ? "bg-white text-slate-900 shadow-sm" : "text-slate-500 hover:text-slate-900"
+              key={b}
+              type="button"
+              aria-pressed={billing === b}
+              onClick={() => setBilling(b)}
+              className={`rounded-full px-5 py-2 text-sm font-medium transition-colors ${
+                billing === b
+                  ? "bg-gradient-to-br from-blue-500 to-indigo-600 text-white shadow-sm"
+                  : "text-slate-600 hover:text-slate-900"
               }`}
             >
-              Monthly
-            </button>
-            <button
-              onClick={() => setIsYearly(true)}
-              className={`rounded-full px-6 py-2 text-sm font-medium transition-all ${
-                isYearly ? "bg-white text-slate-900 shadow-sm" : "text-slate-500 hover:text-slate-900"
-              }`}
-            >
-              Yearly
-            </button>
-          </div>
-        </div>
-      </section>
-
-      <section className="mx-auto max-w-7xl px-6 pb-24 lg:px-8">
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
-          {tiers.map((tier) => (
-            <div
-              key={tier.name}
-              className={`relative flex flex-col rounded-xl border p-8 transition-all ${
-                tier.highlighted
-                  ? "border-blue-200 bg-blue-50/50 shadow-[0_8px_30px_rgb(37,99,235,0.12)]"
-                  : "border-black/[0.04] bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.08)]"
-              }`}
-            >
-              {tier.badge && (
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                  <span className="rounded-full bg-blue-600 px-3 py-1 text-xs font-semibold text-white">
-                    {tier.badge}
-                  </span>
-                </div>
+              {b === "monthly" ? "Monthly" : "Yearly"}
+              {b === "yearly" && (
+                <span className={`ml-2 text-xs ${billing === b ? "text-white/80" : "text-blue-600"}`}>2 months free</span>
               )}
+            </button>
+          ))}
+        </div>
+      </motion.div>
 
-              <div className="mb-6">
-                <h3 className="mb-2 text-2xl font-semibold text-slate-900">{tier.name}</h3>
-                <p className="mb-4 text-sm text-slate-600">{tier.description}</p>
-                <div className="flex items-baseline gap-2">
-                  <span className="text-4xl font-semibold tracking-tight text-slate-900">
-                    {isYearly ? tier.price.yearly : tier.price.monthly}
+      <div className="mx-auto mt-16 grid max-w-6xl gap-6 md:grid-cols-2 lg:grid-cols-4">
+        {tiers.map((tier, i) => {
+          const href = tier.plan ? `${tier.href}${planQuery(tier.plan, billing)}` : tier.href;
+          const hl = tier.highlighted;
+          return (
+            <motion.div
+              key={tier.name}
+              {...reveal(i * 0.06)}
+              className={`relative flex flex-col overflow-hidden rounded-[2rem] p-8 ${
+                hl
+                  ? "bg-gradient-to-br from-blue-500 to-indigo-600 text-white shadow-xl"
+                  : "border border-black/[0.04] bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)]"
+              }`}
+            >
+              {hl && <div aria-hidden className="absolute -top-20 -right-20 h-56 w-56 rounded-full bg-white/10 blur-3xl" />}
+
+              <div className="relative flex items-center justify-between gap-2">
+                <h2 className={`text-xl font-semibold tracking-tight ${hl ? "text-white" : "text-slate-900"}`}>{tier.name}</h2>
+                {hl && (
+                  <span className="rounded-full bg-white/15 px-2.5 py-0.5 text-xs font-medium text-white ring-1 ring-white/25">
+                    Recommended
                   </span>
-                  {tier.price.monthly !== "Free" && tier.price.monthly !== "Custom" && (
-                    <span className="text-slate-600">/{isYearly ? "year" : "month"}</span>
-                  )}
-                </div>
+                )}
               </div>
+              <p className={`relative mt-2 text-sm leading-relaxed ${hl ? "text-white/80" : "text-slate-600"}`}>
+                {tier.description}
+              </p>
 
-              <ul className="mb-8 flex-1 space-y-3">
-                {tier.features.map((feature) => (
-                  <li key={feature} className="flex items-start gap-3">
-                    <span className="mt-1 text-blue-600">✓</span>
-                    <span className="text-sm text-slate-600">{feature}</span>
+              <div className="relative mt-8 flex items-baseline gap-1.5">
+                <span className={`text-5xl font-semibold tracking-tight ${hl ? "text-white" : "text-slate-900"}`}>
+                  {tier.price[billing]}
+                </span>
+                {tier.plan && (
+                  <span className={hl ? "text-white/80" : "text-slate-500"}>/{billing === "yearly" ? "year" : "month"}</span>
+                )}
+              </div>
+              <p className={`relative mt-2 text-sm ${hl ? "text-white/75" : "text-slate-500"}`}>{priceNote(tier, billing)}</p>
+
+              <ul className="relative mt-8 flex-1 space-y-3">
+                {tier.features.map((f) => (
+                  <li key={f} className="flex items-start gap-3 text-sm">
+                    <Check aria-hidden className={`mt-0.5 h-4 w-4 shrink-0 ${hl ? "text-white" : "text-blue-600"}`} />
+                    <span className={hl ? "text-white/90" : "text-slate-600"}>{f}</span>
                   </li>
                 ))}
               </ul>
 
-              <Link
-                href={tier.href}
-                className={`block rounded-full py-2.5 text-center text-sm font-semibold transition-all ${
-                  tier.highlighted
-                    ? "bg-blue-600 text-white shadow-[0_4px_14px_0_rgb(37,99,235,0.39)] hover:bg-blue-700"
-                    : "border border-slate-200 bg-white text-slate-900 hover:border-slate-300"
-                }`}
-              >
-                {tier.cta}
-              </Link>
-            </div>
+              <div className="relative mt-8">
+                {hl ? (
+                  <Link
+                    href={href}
+                    className="inline-flex w-full items-center justify-center rounded-[10px] bg-white py-2.5 text-sm font-semibold text-blue-700 shadow-sm transition-colors hover:bg-blue-50"
+                  >
+                    {tier.cta}
+                  </Link>
+                ) : tier.plan ? (
+                  <Link href={href} className={`${primaryCtaClass} w-full justify-center py-2.5 text-sm`}>
+                    {tier.cta}
+                  </Link>
+                ) : (
+                  <Link href={href} className={secondaryButton}>
+                    {tier.cta}
+                  </Link>
+                )}
+              </div>
+            </motion.div>
+          );
+        })}
+      </div>
+
+      <div className="mx-auto mt-10 flex max-w-6xl flex-wrap items-center justify-center gap-x-8 gap-y-3 text-sm text-slate-500">
+        {["30-day money-back guarantee", "Cancel anytime"].map((t) => (
+          <span key={t} className="flex items-center gap-2">
+            <Check aria-hidden className="h-4 w-4 text-blue-600" />
+            {t}
+          </span>
+        ))}
+      </div>
+
+      {/* FAQ */}
+      <section className="mx-auto mt-28 max-w-3xl sm:mt-36">
+        <motion.h2 {...reveal()} className="text-4xl font-semibold tracking-tight text-slate-900">
+          Pricing questions
+        </motion.h2>
+        <Accordion type="single" collapsible className="mt-10">
+          {faqs.map((f, i) => (
+            <AccordionItem key={f.q} value={`faq-${i}`}>
+              <AccordionTrigger className="text-left">{f.q}</AccordionTrigger>
+              <AccordionContent>{f.a}</AccordionContent>
+            </AccordionItem>
           ))}
-        </div>
+        </Accordion>
       </section>
 
-      <section className="border-t border-slate-200 bg-slate-50/50">
-        <div className="mx-auto max-w-4xl px-6 py-24 text-center lg:px-8">
-          <h2 className="mb-6 text-3xl font-semibold tracking-tight text-slate-900 lg:text-5xl">Need something custom?</h2>
-          <p className="mb-8 text-lg leading-relaxed text-slate-600">
-            When you outgrow self-serve plans, we set custom seats, AI and gateway quotas. Share a short note on size and needs.
+      {/* Enterprise */}
+      <motion.section
+        {...reveal()}
+        className="mx-auto mt-28 flex max-w-6xl flex-col items-start justify-between gap-8 rounded-[2rem] border border-black/[0.04] bg-white p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] sm:mt-36 sm:p-12 md:flex-row md:items-center"
+      >
+        <div className="max-w-2xl">
+          <h2 className="text-balance text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl">
+            Need something custom? <span className="text-slate-500">Let&apos;s talk.</span>
+          </h2>
+          <p className="mt-4 text-lg leading-relaxed text-slate-600">
+            When you outgrow self-serve plans, we set custom seats, AI and gateway quotas. Share a short note on size
+            and needs.
           </p>
-          <Link
-            href="/contact"
-            className="inline-block rounded-full bg-blue-600 px-8 py-3 text-sm font-semibold text-white shadow-[0_4px_14px_0_rgb(37,99,235,0.39)] transition-all hover:bg-blue-700"
-          >
-            Contact Us
-          </Link>
         </div>
-      </section>
+        <Link href="/contact" className={`${primaryCtaClass} shrink-0 px-6 py-3 text-sm`}>
+          Contact sales
+        </Link>
+      </motion.section>
     </div>
   );
 }

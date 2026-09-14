@@ -12,7 +12,7 @@ A complete, multi-page Next.js application for Tracer, an AI-powered KiCad plugi
 
 ## Design Language
 
-**Stealth AI / Cluely Aesthetic (Brutalist, minimalist)**
+**Clean, minimal light aesthetic**
 
 - Background: `#000000` (Pitch black)
 - Primary Text: `#FFFFFF` (Pure white)

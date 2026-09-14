@@ -24,7 +24,7 @@ const faqs = [
   {
     question: "Do I need to leave KiCad?",
     answer:
-      "No. Tracer runs as a plugin inside KiCad 7 and 8. There's nothing to export and no third-party web app.",
+      "No. Tracer runs as a plugin inside KiCad 10. There's nothing to export and no third-party web app.",
   },
   {
     question: "Is Tracer free?",
