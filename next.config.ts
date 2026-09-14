@@ -1,10 +1,11 @@
 import type { NextConfig } from "next";
 
 const isDev = process.env.NODE_ENV === "development";
+const supabaseOrigin = process.env.NEXT_PUBLIC_SUPABASE_URL ? new URL(process.env.NEXT_PUBLIC_SUPABASE_URL).origin : "";
 
 // Static CSP (no nonces) so pages stay prerendered. 'unsafe-inline' is needed for Next's inline
 // bootstrap scripts and Framer Motion's inline styles; 'unsafe-eval' only in dev for React's debugging.
-// Add hosts here when third-party services land (e.g. Supabase/Stripe in connect-src, script-src, frame-src).
+// Supabase is allowed in connect-src for session refresh; Stripe in form-action for no-JS checkout redirects.
 const csp = [
   "default-src 'self'",
   `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}`,
@@ -12,10 +13,10 @@ const csp = [
   "img-src 'self' blob: data:",
   "font-src 'self'",
   "media-src 'self'",
-  "connect-src 'self'",
+  `connect-src 'self' ${supabaseOrigin}`.trim(),
   "object-src 'none'",
   "base-uri 'self'",
-  "form-action 'self'",
+  "form-action 'self' https://checkout.stripe.com https://billing.stripe.com",
   "frame-ancestors 'none'",
   ...(isDev ? [] : ["upgrade-insecure-requests"]),
 ].join("; ");

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { PrimaryCta } from "@/components/ui/PrimaryCta";
+import { createClient } from "@/lib/supabase/client";
 
 const navLinks = [
   { href: "/", label: "Home" },
@@ -18,6 +19,7 @@ export default function Header() {
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [signedIn, setSignedIn] = useState(false);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 16);
@@ -25,10 +27,25 @@ export default function Header() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  // Display hint only; access is enforced on the server. Re-checked on navigation because
+  // sign-in happens in a Server Action, which doesn't fire the browser client's auth events.
+  useEffect(() => {
+    const supabase = createClient();
+    if (!supabase) return;
+    let active = true;
+    supabase.auth.getSession().then(({ data }) => active && setSignedIn(Boolean(data.session)));
+    const { data } = supabase.auth.onAuthStateChange((_event, session) => setSignedIn(Boolean(session)));
+    return () => {
+      active = false;
+      data.subscription.unsubscribe();
+    };
+  }, [pathname]);
+
   // Transparent with white text while over the home hero's sky; solid everywhere else.
   // No border in either state: the hero is pulled up exactly h-16 underneath, so a 1px border would leave a seam.
   const clear = pathname === "/" && !scrolled && !mobileMenuOpen;
   const linkTone = clear ? "text-white/90 hover:text-white" : "text-slate-600 hover:text-slate-900";
+  const account = signedIn ? { href: "/billing", label: "Account" } : { href: "/login", label: "Sign in" };
 
   return (
     <header
@@ -54,8 +71,8 @@ export default function Header() {
         </div>
 
         <div className="hidden items-center gap-6 lg:flex">
-          <Link href="/login" className={`text-[15px] font-medium transition-colors ${linkTone}`}>
-            Sign in
+          <Link href={account.href} className={`text-[15px] font-medium transition-colors ${linkTone}`}>
+            {account.label}
           </Link>
           <PrimaryCta className="px-4 py-2 text-sm" />
         </div>
@@ -94,11 +111,11 @@ export default function Header() {
             ))}
             <div className="mt-3 space-y-3 border-t border-slate-100 pt-4">
               <Link
-                href="/login"
+                href={account.href}
                 className="block py-2 text-sm font-medium text-slate-900"
                 onClick={() => setMobileMenuOpen(false)}
               >
-                Sign in
+                {account.label}
               </Link>
               <PrimaryCta className="w-full justify-center px-5 py-2.5 text-sm" />
             </div>

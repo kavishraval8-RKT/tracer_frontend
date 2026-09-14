@@ -1,80 +1,56 @@
-# Tracer - Frontend Application
+# Tracer website
 
-A complete, multi-page Next.js application for Tracer, an AI-powered KiCad plugin for PCB design.
+Marketing site, waitlist, and account pages for Tracer, the AI copilot for KiCad.
 
-## Tech Stack
+**Stack:** Next.js 16 (App Router) · TypeScript · Tailwind CSS 4 · Framer Motion · Supabase (auth and database) · Stripe (subscriptions)
 
-- **Framework**: Next.js 16.3.5 (App Router)
-- **Language**: TypeScript 5
-- **Styling**: Tailwind CSS 4
-- **Animations**: Framer Motion 13.2.0
-- **Fonts**: Geist Sans & Geist Mono
-
-## Design Language
-
-**Clean, minimal light aesthetic**
-
-- Background: `#000000` (Pitch black)
-- Primary Text: `#FFFFFF` (Pure white)
-- Secondary Text: `#888888` (Slate gray)
-- Borders: `#222222` (Dark gray, 1px solid)
-- Border radius: Max 4px (sharp edges)
-
-## Getting Started
+## Develop
 
 ```bash
-# Install dependencies
 npm install
-
-# Run development server
-npm run dev
-
-# Build for production
-npm run build
+cp .env.example .env.local   # optional; see below
+npm run dev                   # http://localhost:3000
+node --test lib/security.test.mjs
 ```
 
-Open [http://localhost:3000](http://localhost:3000) to view the application.
+The site runs without any environment variables. Until Supabase and Stripe are configured, accounts, the waitlist,
+the contact form, and checkout show a clear "not open yet" message instead of failing.
 
-## Pages Implemented (14 Total)
+## Backend setup
 
-✅ **Home** (`/`) - Hero, interactive console, AI models, capabilities
-✅ **About** (`/about`) - Company story, values, timeline
-✅ **Blog** (`/blog`) - Article listings
-✅ **Pricing** (`/pricing`) - 4-tier pricing with Monthly/Yearly toggle
-✅ **Download** (`/download`) - OS-specific downloads (Windows, macOS, Linux)
-✅ **Instructions** (`/instructions`) - Installation guide
-✅ **Contact** (`/contact`) - Contact form
-✅ **KiCad AI** (`/kicad-ai`) - Product details
-✅ **Billing** (`/billing`) - Subscription management
-✅ **Login** (`/login`) - User authentication
-✅ **Register** (`/register`) - Account creation
-✅ **Terms** (`/terms`) - Terms of Service
-✅ **Privacy** (`/privacy`) - Privacy Policy
-✅ **Refund** (`/refund`) - Refund Policy
+### 1. Supabase (accounts, waitlist, contact messages)
 
-## Components
+1. Create a project at [supabase.com](https://supabase.com).
+2. In the SQL editor, run [`supabase/schema.sql`](supabase/schema.sql).
+3. From **Project Settings → API**, copy the project URL, anon key, and service role key into `.env.local`.
+4. In **Authentication → URL Configuration**, set the Site URL to your domain and add
+   `https://YOUR-DOMAIN/auth/callback` and `http://localhost:3000/auth/callback` to the redirect URLs.
 
-- `Header.tsx` - Global navigation with mobile menu
-- `Footer.tsx` - Footer with Product, Company, Connect sections
-- `InteractiveConsole.tsx` - Terminal-style AI console
-- `ModelGrid.tsx` - AI model cards (Claude 4, GPT-5, Gemini 3, Ohm)
-- `CapabilitiesGrid.tsx` - Feature showcase
+Waitlist sign-ups and contact messages appear in the `waitlist` and `contact_messages` tables.
 
-## Key Features
+### 2. Stripe (paid plans)
 
-- **Zero Broken Links**: Every href points to a real, implemented page
-- **Exact Data Match**: All content uses exact specifications
-- **Mobile Responsive**: Works on all screen sizes
-- **Brutalist Design**: Clean, minimal, high-contrast UI
-- **21st.dev Ready**: Built for easy integration of advanced animations
+1. Create two products, **Basic** and **Pro**, each with a monthly and a yearly recurring USD price
+   ($10 / $100 and $20 / $200). Copy the four price IDs into `.env.local`.
+2. Copy your secret key from **Developers → API keys**.
+3. In **Developers → Webhooks**, add the endpoint `https://YOUR-DOMAIN/api/stripe/webhook` with these events:
+   `checkout.session.completed`, `customer.subscription.created`, `customer.subscription.updated`,
+   `customer.subscription.deleted`. Copy the signing secret into `STRIPE_WEBHOOK_SECRET`.
+4. Turn on the **Customer portal** in Stripe's billing settings so customers can change or cancel plans.
 
-## AI Models Supported
+For local testing, run `stripe listen --forward-to localhost:3000/api/stripe/webhook` and use the secret it prints.
 
-1. **Claude 4** (ANTHROPIC)
-2. **GPT-5** (OPENAI)
-3. **Gemini 3** (GOOGLE)
-4. **Ohm** - formerly Electrode 1.0 (TRACER / OUR MODEL)
+### 3. Deploy
 
----
+Set every variable from [`.env.example`](.env.example) in your host. `NEXT_PUBLIC_*` values are built into the site, so
+rebuild after changing them.
 
-**© 2024 - 2026 Tracer. All rights reserved.**
+## Security
+
+- Plans change only through the signature-verified Stripe webhook. The `profiles` table has no update policy, so users
+  can't grant themselves a plan.
+- `SUPABASE_SERVICE_ROLE_KEY` and all `STRIPE_*` values are server-only.
+- `/billing` is protected in `proxy.ts`, and every Server Action checks the session again.
+- Public forms are validated on the server and protected by a honeypot field and rate limiting. The rate limiter is
+  in-memory per server instance; move it to a shared store before relying on it at scale.
+- Security headers (CSP, frame, referrer, permissions, HSTS) are set in `next.config.ts`.

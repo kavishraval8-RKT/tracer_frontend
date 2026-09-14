@@ -1,9 +1,11 @@
 "use client";
 
-import { Suspense, useState } from "react";
+import { Suspense, useActionState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { primaryCtaClass } from "@/components/ui/PrimaryCta";
+import { signIn } from "@/lib/actions/auth";
+import type { FormState } from "@/lib/forms";
 import { PAID_PLANS, planQuery, readPlan, type Billing, type PaidPlanId } from "@/lib/plans";
 
 const field =
@@ -12,26 +14,22 @@ const field =
 export default function LoginPage() {
   // useSearchParams needs a Suspense boundary on prerendered routes; the fallback is the plan-less form.
   return (
-    <Suspense fallback={<LoginCard plan={null} billing="monthly" />}>
+    <Suspense fallback={<LoginCard plan={null} billing="monthly" linkError={false} />}>
       <LoginWithPlan />
     </Suspense>
   );
 }
 
 function LoginWithPlan() {
-  const { plan, billing } = readPlan(useSearchParams());
-  return <LoginCard plan={plan} billing={billing} />;
+  const params = useSearchParams();
+  const { plan, billing } = readPlan(params);
+  return <LoginCard plan={plan} billing={billing} linkError={params.get("error") === "confirm"} />;
 }
 
-function LoginCard({ plan, billing }: { plan: PaidPlanId | null; billing: Billing }) {
-  const [formData, setFormData] = useState({ email: "", password: "" });
+function LoginCard({ plan, billing, linkError }: { plan: PaidPlanId | null; billing: Billing; linkError: boolean }) {
+  const [state, action, pending] = useActionState<FormState, FormData>(signIn, null);
   const chosen = plan ? PAID_PLANS[plan] : null;
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // ponytail: not connected to an auth backend yet, so nothing is sent or stored.
-    // Sign in here, then continue to checkout when `plan` is set, otherwise to /billing.
-  };
+  const error = state && !state.ok ? state.message : linkError ? "That confirmation link is invalid or has expired." : null;
 
   return (
     <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center px-4 py-12">
@@ -43,18 +41,24 @@ function LoginCard({ plan, billing }: { plan: PaidPlanId | null; billing: Billin
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-5">
+        <form action={action} className="space-y-5">
+          {plan && (
+            <>
+              <input type="hidden" name="plan" value={plan} />
+              <input type="hidden" name="billing" value={billing} />
+            </>
+          )}
           <div>
             <label htmlFor="email" className="mb-2 block text-sm font-medium text-slate-700">
               Email
             </label>
             <input
               id="email"
+              name="email"
               type="email"
               autoComplete="email"
               required
-              value={formData.email}
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              defaultValue={state?.fields?.email}
               className={field}
               placeholder="you@company.com"
             />
@@ -66,18 +70,28 @@ function LoginCard({ plan, billing }: { plan: PaidPlanId | null; billing: Billin
             </label>
             <input
               id="password"
+              name="password"
               type="password"
               autoComplete="current-password"
               required
-              value={formData.password}
-              onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+              aria-invalid={Boolean(error)}
+              aria-describedby={error ? "login-error" : undefined}
               className={field}
               placeholder="Your password"
             />
+            {error && (
+              <p id="login-error" role="alert" className="mt-2 text-sm text-red-600">
+                {error}
+              </p>
+            )}
           </div>
 
-          <button type="submit" className={`${primaryCtaClass} w-full justify-center py-3 text-sm`}>
-            Sign in
+          <button
+            type="submit"
+            disabled={pending}
+            className={`${primaryCtaClass} w-full justify-center py-3 text-sm disabled:pointer-events-none disabled:opacity-70`}
+          >
+            {pending ? "Signing in…" : "Sign in"}
           </button>
         </form>
 
