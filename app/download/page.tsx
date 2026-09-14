@@ -132,7 +132,7 @@ export default function DownloadPage() {
         <div className="relative rounded-3xl bg-white/85 p-8 shadow-[0_30px_80px_-20px_rgba(15,23,42,0.4)] ring-1 ring-white/70 backdrop-blur-2xl sm:p-10">
           {isSubmitted ? (
             <div role="status" className="py-4 text-center">
-              <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 text-white shadow-[0_12px_30px_-8px_rgba(59,130,246,0.6)]">
+              <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-blue-50 text-blue-600 ring-1 ring-blue-600/15">
                 <Check className="h-7 w-7" strokeWidth={2.5} aria-hidden />
               </span>
               <h2 id="waitlist-title" className="mt-6 text-2xl font-bold tracking-tight text-slate-900">

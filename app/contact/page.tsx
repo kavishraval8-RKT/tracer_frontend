@@ -68,8 +68,8 @@ export default function ContactPage() {
         >
           {opened ? (
             <div role="status" className="py-6 text-center">
-              <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 text-white shadow-[0_12px_30px_-8px_rgba(59,130,246,0.6)]">
-                <Mail className="h-6 w-6" aria-hidden />
+              <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-blue-50 text-blue-600 ring-1 ring-blue-600/15">
+                <Mail className="h-6 w-6" strokeWidth={1.75} aria-hidden />
               </span>
               <h2 className="mt-6 text-2xl font-semibold tracking-tight text-slate-900">Your email app should be open</h2>
               <p className="mx-auto mt-3 max-w-sm leading-relaxed text-slate-600">
@@ -151,8 +151,8 @@ export default function ContactPage() {
               {...reveal(0.06 + i * 0.06)}
               className="flex gap-4 rounded-[1.5rem] border border-black/[0.04] bg-white p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)]"
             >
-              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 text-white shadow-[0_8px_20px_-6px_rgba(59,130,246,0.55)]">
-                <c.icon className="h-5 w-5" aria-hidden />
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white text-slate-700 ring-1 ring-slate-200 shadow-[0_1px_2px_rgba(15,23,42,0.06)]">
+                <c.icon className="h-5 w-5" strokeWidth={1.75} aria-hidden />
               </span>
               <div className="min-w-0">
                 <h3 className="font-semibold tracking-tight text-slate-900">{c.title}</h3>

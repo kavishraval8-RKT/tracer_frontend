@@ -15,8 +15,8 @@ export default function BillingPage() {
   return (
     <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center px-6 py-16">
       <div className="w-full max-w-lg rounded-[2rem] border border-black/[0.04] bg-white p-8 text-center shadow-[0_8px_30px_rgb(0,0,0,0.04)] sm:p-12">
-        <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 text-white shadow-[0_12px_30px_-8px_rgba(59,130,246,0.6)]">
-          <CreditCard className="h-6 w-6" aria-hidden />
+        <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-slate-700 ring-1 ring-slate-200 shadow-[0_1px_2px_rgba(15,23,42,0.06)]">
+          <CreditCard className="h-6 w-6" strokeWidth={1.75} aria-hidden />
         </span>
         <h1 className="mt-6 text-3xl font-semibold tracking-tight text-slate-900">Billing</h1>
         <p className="mx-auto mt-3 max-w-sm leading-relaxed text-slate-600">

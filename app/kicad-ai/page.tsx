@@ -92,8 +92,8 @@ export default function KiCadAIPage() {
               key={f.title}
               className="rounded-[2rem] border border-black/[0.04] bg-white p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)]"
             >
-              <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 text-white shadow-[0_8px_20px_-6px_rgba(59,130,246,0.55)]">
-                <f.icon className="h-5 w-5" aria-hidden />
+              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-white text-slate-700 ring-1 ring-slate-200 shadow-[0_1px_2px_rgba(15,23,42,0.06)]">
+                <f.icon className="h-5 w-5" strokeWidth={1.75} aria-hidden />
               </span>
               <h3 className="mt-6 text-lg font-semibold tracking-tight text-slate-900">{f.title}</h3>
               <p className="mt-2 leading-relaxed text-slate-600">{f.desc}</p>
