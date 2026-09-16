@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useMotionValueEvent, useScroll } from "framer-motion";
 import { PrimaryCta } from "@/components/ui/PrimaryCta";
 import { createClient } from "@/lib/supabase/client";
 
@@ -21,11 +22,8 @@ export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [signedIn, setSignedIn] = useState(false);
 
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 16);
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+  const { scrollY } = useScroll();
+  useMotionValueEvent(scrollY, "change", (y) => setScrolled(y > 16));
 
   // Display hint only; access is enforced on the server. Re-checked on navigation because
   // sign-in happens in a Server Action, which doesn't fire the browser client's auth events.
@@ -45,6 +43,13 @@ export default function Header() {
   // No border in either state: the hero is pulled up exactly h-16 underneath, so a 1px border would leave a seam.
   const clear = pathname === "/" && !scrolled && !mobileMenuOpen;
   const linkTone = clear ? "text-white/90 hover:text-white" : "text-slate-600 hover:text-slate-900";
+  // Next.js doesn't scroll when a link points at the current page, so do it here (logo or "Home" on the home page, etc.).
+  const scrollTopIfCurrent = (href: string) => (e: React.MouseEvent) => {
+    if (href !== pathname) return;
+    e.preventDefault();
+    const smooth = !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    window.scrollTo({ top: 0, behavior: smooth ? "smooth" : "auto" });
+  };
   const account = signedIn ? { href: "/billing", label: "Account" } : { href: "/login", label: "Sign in" };
 
   return (
@@ -57,13 +62,14 @@ export default function Header() {
         <div className="flex items-center gap-12">
           <Link
             href="/"
+            onClick={scrollTopIfCurrent("/")}
             className={`text-2xl font-semibold tracking-tight transition-colors ${clear ? "text-white" : "text-slate-900"}`}
           >
             Tracer
           </Link>
           <div className="hidden items-center gap-8 lg:flex">
             {navLinks.map((link) => (
-              <Link key={link.href} href={link.href} className={`text-[15px] font-medium transition-colors ${linkTone}`}>
+              <Link key={link.href} href={link.href} onClick={scrollTopIfCurrent(link.href)} className={`text-[15px] font-medium transition-colors ${linkTone}`}>
                 {link.label}
               </Link>
             ))}
@@ -104,7 +110,10 @@ export default function Header() {
                 key={link.href}
                 href={link.href}
                 className="block py-2 text-sm font-medium text-slate-600 transition-colors hover:text-slate-900"
-                onClick={() => setMobileMenuOpen(false)}
+                onClick={(e) => {
+                  setMobileMenuOpen(false);
+                  scrollTopIfCurrent(link.href)(e);
+                }}
               >
                 {link.label}
               </Link>

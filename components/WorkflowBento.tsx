@@ -52,11 +52,11 @@ const modes: Record<Mode, { prompt: string; output: React.ReactNode }> = {
     ),
   },
   Ask: {
-    prompt: "Why is U3 running hot?",
+    prompt: "Which ESP32 pin should drive the status LED?",
     output: (
       <p className="rounded-xl bg-slate-100 px-3.5 py-3 text-[13px] leading-relaxed text-slate-900">
-        U3&apos;s thermal pad has no vias to GND. A 3×3 via array under it would cut its temperature rise by roughly
-        half. Nothing was changed.
+        Use GPIO4. It&apos;s free and closest to D2. Avoid GPIO0, GPIO2 and GPIO12: they&apos;re strapping pins and
+        can stop the ESP32 from booting. Nothing was changed.
       </p>
     ),
   },
@@ -258,6 +258,10 @@ export default function WorkflowBento() {
               <img
                 src="/kicad-background.png"
                 alt=""
+                width={1917}
+                height={1078}
+                loading="lazy"
+                decoding="async"
                 className="h-14 w-20 shrink-0 rounded-lg object-cover object-left-top ring-1 ring-black/5"
               />
               <span className="inline-flex min-w-0 items-center gap-1 rounded-md border border-slate-200 bg-slate-50 py-0.5 pr-1.5 pl-2 text-[11px] text-slate-700">

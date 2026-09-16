@@ -5,7 +5,7 @@ const columns = [
   {
     title: "Product",
     links: [
-      { href: "/kicad-ai", label: "KiCad AI" },
+      { href: "/kicad-ai", label: "Tracer Co-pilot" },
       { href: "/download", label: "Download" },
       { href: "/pricing", label: "Pricing" },
     ],
@@ -53,7 +53,7 @@ export default function Footer() {
         </div>
 
         <div className="mt-12 flex flex-col items-center justify-between gap-2 border-t border-slate-200 pt-8 text-center md:flex-row md:text-left">
-          <p className="text-sm text-slate-500">© 2024 - 2026 Tracer. All rights reserved.</p>
+          <p className="text-sm text-slate-500">© {new Date().getFullYear()} Tracer. All rights reserved.</p>
           <a
             href="mailto:hello@tracer.dev"
             className="text-sm text-slate-500 transition-colors hover:text-slate-900"

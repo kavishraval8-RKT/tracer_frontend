@@ -20,7 +20,7 @@ const history = [
   { ts: "14:32", mode: "Agent", prompt: "Keep the antenna keep-out clear" },
   { ts: "14:29", mode: "Agent", prompt: "Add a 3.3V LDO for the ESP32", active: true },
   { ts: "14:21", mode: "Plan", prompt: "Suggest a USB-C power input" },
-  { ts: "14:08", mode: "Ask", prompt: "Why is U3 running hot?" },
+  { ts: "14:08", mode: "Ask", prompt: "Which ESP32 pin should drive the status LED?" },
 ];
 
 const DRU = [
@@ -59,7 +59,6 @@ function DruLine({ line }: { line: string }) {
 
 const stack = [
   { name: "KiCad 10", dot: "bg-[#314CB0]" },
-  { name: "Freerouting", dot: "bg-red-500" },
   { name: "Claude", dot: "bg-[#D97757]" },
   { name: "GPT-5", dot: "bg-[#10A37F]" },
   { name: "Gemini", dot: "bg-[#4285F4]" },

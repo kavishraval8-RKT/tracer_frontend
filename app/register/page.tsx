@@ -103,6 +103,7 @@ function RegisterCard({ plan, billing }: { plan: PaidPlanId | null; billing: Bil
                   id="email"
                   name="email"
                   type="email"
+                  spellCheck={false}
                   autoComplete="email"
                   required
                   defaultValue={state?.fields?.email}

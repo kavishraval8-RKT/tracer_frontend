@@ -43,3 +43,5 @@ next-env.d.ts
 
 # reference material, not app source
 /design-reference/
+# VoltAgent/awesome-design-md clone (brand DESIGN.md library; update with `git -C awesome-design-md pull`)
+/awesome-design-md/

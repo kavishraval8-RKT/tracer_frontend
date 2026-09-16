@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { motion, useInView } from "framer-motion";
+import { Minus, Square, X } from "lucide-react";
 
 type Net = {
   segs: { d: string; layer: "F" | "B" }[];
@@ -43,7 +44,7 @@ const smdPads: [number, number][] = [
   [70, 50], [70, 74], [70, 106], [70, 130],
 ];
 
-/** Looping mock of a Freerouting session: nets route one by one while the card is on screen. */
+/** Looping mock of an autorouting session: nets route one by one while the card is on screen. */
 export function FreeroutingDemo() {
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { margin: "-60px" });
@@ -64,16 +65,16 @@ export function FreeroutingDemo() {
       className="flex h-full flex-col overflow-hidden rounded-xl border border-black/10 bg-[#f4f4f5] text-[10px] text-zinc-700 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.25)]"
     >
       <div className="flex h-6 shrink-0 items-center justify-between bg-white px-2.5">
-        <span className="font-medium text-zinc-800">Freerouting — tracertest.dsn</span>
-        <span className="flex gap-3 text-zinc-400" aria-hidden>
-          <span>—</span>
-          <span>▢</span>
-          <span>✕</span>
+        <span className="font-medium text-zinc-800">Autorouter · tracertest.kicad_pcb</span>
+        <span className="flex items-center gap-3 text-zinc-400" aria-hidden>
+          <Minus className="h-3 w-3" />
+          <Square className="h-2.5 w-2.5" />
+          <X className="h-3 w-3" />
         </span>
       </div>
 
       <div className="flex h-5 shrink-0 items-center gap-3 border-b border-zinc-200 bg-white px-2.5 text-zinc-600">
-        {["File", "Display", "Parameter", "Rules", "Info", "Other"].map((m) => (
+        {["File", "View", "Route", "Rules", "Help"].map((m) => (
           <span key={m}>{m}</span>
         ))}
       </div>
@@ -102,7 +103,7 @@ export function FreeroutingDemo() {
       </div>
 
       <div className="min-h-0 flex-1 bg-black">
-        <svg viewBox="0 0 640 180" className="h-full w-full" aria-label="Freerouting autorouting a two-layer board">
+        <svg viewBox="0 0 640 180" className="h-full w-full" aria-label="Autorouter routing a two-layer board">
           <rect x="24" y="18" width="592" height="144" rx="4" fill="#0c0c0e" stroke="#52525b" />
           <g fill="none" stroke="#71717a">
             <rect x="146" y="52" width="82" height="84" rx="2" />

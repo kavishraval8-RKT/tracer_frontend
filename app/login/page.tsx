@@ -56,6 +56,7 @@ function LoginCard({ plan, billing, linkError }: { plan: PaidPlanId | null; bill
               id="email"
               name="email"
               type="email"
+              spellCheck={false}
               autoComplete="email"
               required
               defaultValue={state?.fields?.email}

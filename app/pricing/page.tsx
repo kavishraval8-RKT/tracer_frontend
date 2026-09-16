@@ -180,7 +180,7 @@ export default function PricingPage() {
               </p>
 
               <div className="relative mt-8 flex items-baseline gap-1.5">
-                <span className={`text-5xl font-semibold tracking-tight ${hl ? "text-white" : "text-slate-900"}`}>
+                <span className={`text-5xl font-semibold tracking-tight tabular-nums ${hl ? "text-white" : "text-slate-900"}`}>
                   {tier.price[billing]}
                 </span>
                 {tier.plan && (

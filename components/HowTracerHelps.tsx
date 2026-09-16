@@ -65,10 +65,10 @@ export default function HowTracerHelps() {
               className="h-full"
               showLog={false}
               messages={[
-                { role: "user", text: "Why is U3 running hot?" },
+                { role: "user", text: "Which ESP32 pin should drive the status LED?" },
                 {
                   role: "assistant",
-                  text: "U3's thermal pad has no vias to GND. Adding a 3×3 via array under it will cut its temperature rise by roughly half.",
+                  text: "Use GPIO4. It's free and closest to D2. Avoid GPIO0, GPIO2 and GPIO12: they're strapping pins and can stop the ESP32 from booting.",
                 },
               ]}
             />
@@ -111,11 +111,11 @@ export default function HowTracerHelps() {
           className="relative h-[450px] overflow-hidden rounded-[2rem] border border-black/[0.04] bg-[#F1F3F5] p-10 shadow-inner md:col-span-2"
         >
           <h3 className="text-2xl font-semibold tracking-tight text-slate-900">
-            Auto-Routing 2.0
+            Auto routing
           </h3>
           <p className="mt-3 max-w-md leading-relaxed text-slate-600">
-            Tracer hands the board to Freerouting with your net classes and
-            design rules, then DRC-checks every trace before it lands.
+            Tracer routes the board with your net classes and design rules,
+            then DRC-checks every trace before it lands.
           </p>
           <div inert className="absolute inset-x-10 top-[172px] bottom-8 max-sm:top-[230px]">
             <FreeroutingDemo />

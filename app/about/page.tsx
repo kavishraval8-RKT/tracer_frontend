@@ -9,7 +9,14 @@ import FutureVision from "@/components/FutureVision";
 
 const iteration = [
   { label: "Software: change → test", time: "seconds", width: "5%", color: "bg-blue-500" },
+  { label: "Firmware: edit → flash", time: "minutes", width: "18%", color: "bg-blue-300" },
   { label: "Hardware: constraint change → re-route", time: "days", width: "100%", color: "bg-slate-800" },
+];
+
+const bridge = [
+  { label: "You ask", text: "Route USB as a 90 Ω pair" },
+  { label: "Tracer, inside KiCad", text: "Routes the pair and checks it", strong: true },
+  { label: "You review", text: "+2 traces on F.Cu · DRC 0 errors", mono: true },
 ];
 
 const journey = [
@@ -79,20 +86,19 @@ export default function AboutPage() {
           className="flex flex-col rounded-[2rem] border border-black/[0.04] bg-white p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] sm:p-10 md:col-span-2"
         >
           <h2 className="text-balance text-2xl font-medium leading-snug tracking-tight text-slate-900 sm:text-3xl">
-            As a solo engineer, the speed limit on hardware development isn&apos;t physics—it is the EDA tool.
+            The speed limit on hardware isn&apos;t physics. It&apos;s the EDA tool.
           </h2>
           <p className="mt-4 max-w-xl text-lg leading-relaxed text-slate-600">
             In software, iterating is instant. In hardware, a single constraint change means days of manual
-            re-routing.{" "}
-            <span className="font-medium text-blue-600">Hardware needs to move at the speed of thought.</span>
+            re-routing and re-checking.
           </p>
 
-          <div className="mt-auto space-y-4 pt-10">
+          <div className="mt-auto space-y-5 pt-10">
             {iteration.map((row) => (
               <div key={row.label}>
                 <div className="mb-1.5 flex justify-between gap-4 text-xs">
                   <span className="font-medium text-slate-700">{row.label}</span>
-                  <span className="shrink-0 text-slate-500">{row.time}</span>
+                  <span className="shrink-0 tabular-nums text-slate-500">{row.time}</span>
                 </div>
                 <div className="h-2.5 overflow-hidden rounded-full bg-slate-100">
                   <motion.div
@@ -108,27 +114,38 @@ export default function AboutPage() {
           </div>
         </motion.div>
 
-        {/* The Bridge */}
+        {/* The missing link */}
         <motion.div
           {...reveal(0.1)}
-          className="relative flex flex-col overflow-hidden rounded-[2rem] bg-gradient-to-br from-blue-500 to-indigo-600 p-8 text-white shadow-xl sm:p-10"
+          className="flex flex-col rounded-[2rem] border border-black/[0.04] bg-gradient-to-b from-[#DEE3F1] to-[#ECEFF7] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] sm:p-10"
         >
-          <div aria-hidden className="absolute -top-20 -right-20 h-60 w-60 rounded-full bg-white/10 blur-3xl" />
-          <h2 className="relative text-3xl font-semibold tracking-tight">Tracer Today</h2>
-          <p className="relative mt-3 leading-relaxed text-white/85">
-            AI needs an environment to act. Tracer is the missing link—a copilot living directly inside KiCad
-            that translates natural language intent into physical traces and layout changes.
+          <h2 className="text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">
+            The missing link
+          </h2>
+          <p className="mt-3 leading-relaxed text-slate-600">
+            Describe a change in plain language. Tracer makes it on the board, runs DRC, and stages it for your
+            review.
           </p>
 
-          <div className="relative mt-auto space-y-1.5 pt-8 text-sm" aria-hidden>
-            <div className="rounded-xl bg-white/15 px-3 py-2 ring-1 ring-white/20">“Route USB as a 90 Ω pair”</div>
-            <div className="text-center text-white/60">↓</div>
-            <div className="rounded-xl bg-white px-3 py-2 font-medium text-slate-900 shadow-lg">Tracer · inside KiCad</div>
-            <div className="text-center text-white/60">↓</div>
-            <div className="rounded-xl bg-white/15 px-3 py-2 font-mono text-xs ring-1 ring-white/20">
-              + 2 traces on F.Cu · DRC 0 errors
-            </div>
-          </div>
+          <ol className="mt-auto pt-8 text-sm" aria-label="How a request flows through Tracer">
+            {bridge.map((step, i) => (
+              <li key={step.label}>
+                {i > 0 && <span aria-hidden className="mx-auto block h-4 w-px bg-slate-400/70" />}
+                <div
+                  className={`rounded-xl bg-white px-3.5 py-2.5 ring-1 ${
+                    step.strong
+                      ? "shadow-[0_8px_20px_-8px_rgba(37,99,235,0.35)] ring-blue-600/25"
+                      : "shadow-sm ring-black/[0.05]"
+                  }`}
+                >
+                  <div className="text-[11px] text-slate-500">{step.label}</div>
+                  <div className={`mt-0.5 text-slate-900 ${step.mono ? "font-mono text-xs" : "font-medium"}`}>
+                    {step.text}
+                  </div>
+                </div>
+              </li>
+            ))}
+          </ol>
         </motion.div>
       </div>
 
@@ -176,7 +193,7 @@ export default function AboutPage() {
       <FutureVision />
 
       {/* Principles */}
-      <section className="mx-auto mt-32 max-w-6xl sm:mt-44">
+      <section className="mx-auto mt-28 max-w-6xl sm:mt-36">
         <motion.div {...reveal()} className="mx-auto max-w-2xl text-center">
           <h2 className="text-balance text-4xl font-semibold tracking-tight text-slate-900 sm:text-5xl">
             What Tracer <span className="text-slate-500">stands for</span>

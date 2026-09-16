@@ -110,7 +110,7 @@ export function InteractiveChat({
                 role="tab"
                 aria-selected={tab === t}
                 onClick={() => setTab(t)}
-                className={`flex-1 rounded-full px-3 py-1.5 capitalize transition-all ${
+                className={`flex-1 rounded-full px-3 py-1.5 capitalize transition-[color,background-color,box-shadow] ${
                   tab === t ? "bg-white text-[#26251E] shadow-sm" : "text-gray-500 hover:text-[#26251E]"
                 }`}
               >

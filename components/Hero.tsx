@@ -101,7 +101,7 @@ function Sky() {
 export default function Hero() {
   return (
     // -mt-16 slides the sky under the transparent sticky header (h-16).
-    <section className="relative -mt-16 w-full overflow-hidden bg-[linear-gradient(180deg,#1F78D4_0px,#3590E0_220px,#53A8EA_440px,#8BC9F3_600px,#CFE9FA_780px,#F8F9FA_950px)] pt-40 pb-32 max-sm:bg-[linear-gradient(180deg,#1F78D4_0px,#3590E0_240px,#53A8EA_480px,#8BC9F3_640px,#CFE9FA_820px,#F8F9FA_990px)]">
+    <section className="relative -mt-16 w-full overflow-hidden bg-[linear-gradient(180deg,#1F78D4_0px,#3590E0_220px,#53A8EA_440px,#8BC9F3_600px,#CFE9FA_780px,#F8F9FA_950px)] pt-32 pb-32 max-sm:bg-[linear-gradient(180deg,#1F78D4_0px,#3590E0_240px,#53A8EA_480px,#8BC9F3_640px,#CFE9FA_820px,#F8F9FA_990px)]">
       <Sky />
       <motion.div
         initial="hidden"
@@ -134,7 +134,7 @@ export default function Hero() {
 
           <motion.div
             variants={item}
-            className="mt-10 flex flex-wrap items-center justify-center gap-x-6 gap-y-4"
+            className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-4"
           >
             <PrimaryCta className="px-6 py-3 text-base" />
             <Link
@@ -144,16 +144,9 @@ export default function Hero() {
               Read the docs <span aria-hidden>→</span>
             </Link>
           </motion.div>
-
-          <motion.p
-            variants={item}
-            className="mt-5 text-xs text-white/85 [text-shadow:0_1px_8px_rgba(23,76,160,0.35)]"
-          >
-            Free Hobby plan · KiCad 10
-          </motion.p>
         </div>
 
-        <motion.div variants={media} className="relative mt-20">
+        <motion.div variants={media} className="relative mt-14">
           <div aria-hidden className="absolute -inset-x-10 -inset-y-8 -z-10 rounded-[3rem] bg-white/50 blur-3xl" />
           <div className="mx-auto max-w-6xl rounded-[1.25rem] bg-white/25 p-1.5 shadow-[0_40px_100px_-30px_rgba(20,60,130,0.45)] ring-1 ring-white/60 backdrop-blur-sm">
             <HeroMockup />

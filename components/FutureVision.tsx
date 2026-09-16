@@ -51,7 +51,7 @@ const horizons = [
       "Requirements saved with the project, not the chat",
       "Whole subsystems generated from a written spec",
       "Reasoning across schematic and layout together",
-      "Design reviews that explain every trade-off",
+      "Design reviews that explain every trade‑off",
     ],
   },
   {
@@ -295,6 +295,10 @@ export default function FutureVision() {
         <img
           src={VISION_PHOTO}
           alt="Silicon wafer with a grid of iridescent microchip dies"
+          width={1600}
+          height={1047}
+          loading="lazy"
+          decoding="async"
           className="aspect-[4/3] w-full object-cover sm:aspect-[21/9]"
         />
       </motion.div>
@@ -310,7 +314,7 @@ export default function FutureVision() {
         <motion.div {...reveal(0.1)} className="space-y-6 text-lg leading-relaxed text-slate-600">
           <p>
             Schematic capture replaced the drafting table. Autorouters took over the most tedious traces. Yet the
-            core loop of hardware design—change a constraint, rework the board, check it again—still moves at the
+            core loop of hardware design (change a constraint, rework the board, check it again) still moves at the
             speed of a mouse.
           </p>
           <p>
@@ -349,8 +353,7 @@ export default function FutureVision() {
       <div className="mt-24 grid gap-10 sm:grid-cols-2 lg:mt-32 lg:grid-cols-4 lg:gap-8">
         {shifts.map((s, i) => (
           <motion.div key={s.title} {...reveal(i * 0.08)} className="border-t border-slate-200 pt-6">
-            <span className="text-sm text-slate-400">{String(i + 1).padStart(2, "0")}</span>
-            <h4 className="mt-2 text-lg font-semibold tracking-tight text-slate-900">{s.title}</h4>
+            <h4 className="text-lg font-semibold tracking-tight text-slate-900">{s.title}</h4>
             <p className="mt-2 leading-relaxed text-slate-500">{s.desc}</p>
           </motion.div>
         ))}

@@ -107,7 +107,7 @@ const examples = [
 
 const modes = [
   { mode: "Agent", does: "Makes changes to your schematic or board.", when: "You want Tracer to do the work. This is the default." },
-  { mode: "Ask", does: "Answers questions about your design without editing it.", when: "You want an explanation, like “Why is U3 running hot?”" },
+  { mode: "Ask", does: "Answers questions about your design without editing it.", when: "You want an explanation, like “Which ESP32 pin should drive the status LED?”" },
   { mode: "Plan", does: "Lays out the steps it would take, without applying them.", when: "You want to review an approach before anything changes." },
   { mode: "Debug", does: "Investigates errors and problems in your design.", when: "ERC or DRC reports issues you want explained and fixed." },
 ];

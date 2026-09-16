@@ -89,6 +89,7 @@ function ContactForm({ onReset }: { onReset: () => void }) {
               id="email"
               name="email"
               type="email"
+              spellCheck={false}
               autoComplete="email"
               required
               defaultValue={state?.fields?.email}

@@ -100,6 +100,7 @@ function WaitlistForm({ platform, onDone }: { platform: Platform; onDone: () => 
             id="wl-email"
             name="email"
             type="email"
+            spellCheck={false}
             required
             autoComplete="email"
             defaultValue={state?.fields?.email}
@@ -223,7 +224,7 @@ export default function DownloadPage() {
         onClick={(e) => {
           if (e.target === e.currentTarget) setIsModalOpen(false);
         }}
-        className="m-auto w-[calc(100%-2rem)] max-w-md scale-95 overflow-visible bg-transparent p-0 opacity-0 transition-all transition-discrete duration-300 ease-out backdrop:bg-slate-900/30 backdrop:backdrop-blur-md open:scale-100 open:opacity-100 starting:open:scale-95 starting:open:opacity-0"
+        className="m-auto w-[calc(100%-2rem)] max-w-md scale-95 overflow-visible bg-transparent p-0 opacity-0 transition-[opacity,scale,display,overlay] transition-discrete duration-300 ease-out backdrop:bg-slate-900/30 backdrop:backdrop-blur-md open:scale-100 open:opacity-100 starting:open:scale-95 starting:open:opacity-0"
       >
         <div className="relative rounded-3xl bg-white/85 p-8 shadow-[0_30px_80px_-20px_rgba(15,23,42,0.4)] ring-1 ring-white/70 backdrop-blur-2xl sm:p-10">
           <WaitlistForm key={formKey} platform={platform} onDone={() => setIsModalOpen(false)} />

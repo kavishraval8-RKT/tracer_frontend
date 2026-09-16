@@ -22,8 +22,25 @@
 }
 
 @layer base {
+  /* Keeps anchored and keyboard-focused content clear of the sticky header. */
+  html {
+    scroll-padding-top: 5rem;
+  }
+
   body {
     font-feature-settings: "rlig" 1, "calt" 1;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  a, button, input, select, textarea, label, summary {
+    touch-action: manipulation;
+  }
+
+  /* Two-tone ring (white halo + blue outline) stays visible on the blue hero and on light pages. */
+  :focus-visible {
+    outline: 2px solid #2563eb;
+    outline-offset: 2px;
+    box-shadow: 0 0 0 2px #fff;
   }
 }
 

@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 
 const MODES = ["Agent", "Ask", "Plan", "Debug"];
-const MODELS = ["Claude Sonnet", "GPT-5", "Gemini 3 Pro", "Ohm"];
+const MODELS = ["Claude Sonnet", "GPT-6 Astra", "Gemini 3 Pro", "Ohm"];
 const ATTACH = ["Attach file…", "Screenshot KiCad"];
 
 type Menu = "attach" | "mode" | "model";
@@ -12,6 +12,9 @@ type Props = {
   /** Positioning; defaults to the hero placement. */
   className?: string;
   defaultPrompt?: string;
+  /** Pass with onPromptChange to control the input (the hero demo types into it). */
+  prompt?: string;
+  onPromptChange?: (text: string) => void;
   busy?: boolean;
   onSend?: (text: string) => void;
   onStop?: () => void;
@@ -23,12 +26,16 @@ const pill =
 export function InteractiveDock({
   className = "absolute bottom-6 left-1/2 -translate-x-1/2",
   defaultPrompt = "",
+  prompt: controlledPrompt,
+  onPromptChange,
   busy = false,
   onSend,
   onStop,
 }: Props) {
   const ref = useRef<HTMLDivElement>(null);
-  const [prompt, setPrompt] = useState(defaultPrompt);
+  const [localPrompt, setLocalPrompt] = useState(defaultPrompt);
+  const prompt = controlledPrompt ?? localPrompt;
+  const setPrompt = onPromptChange ?? setLocalPrompt;
   const [mode, setMode] = useState(MODES[0]);
   const [model, setModel] = useState(MODELS[0]);
   const [autoCheck, setAutoCheck] = useState(true);
@@ -71,7 +78,7 @@ export function InteractiveDock({
   return (
     <div
       ref={ref}
-      className={`${className} z-20 w-full max-w-2xl rounded-3xl border border-slate-200 bg-white p-4 px-5 shadow-[0_20px_40px_rgba(0,0,0,0.1)]`}
+      className={`${className} z-20 w-full max-w-2xl rounded-3xl border border-slate-200 bg-white p-4 px-5 shadow-[0_20px_40px_rgba(0,0,0,0.1)] transition-shadow focus-within:border-blue-300 focus-within:ring-4 focus-within:ring-blue-500/10`}
     >
       {/* Row 1: status */}
       <div className="mb-2 flex items-center gap-2">
@@ -104,6 +111,7 @@ export function InteractiveDock({
       <input
         type="text"
         aria-label="Describe what you want to build"
+        autoComplete="off"
         value={prompt}
         onChange={(e) => setPrompt(e.target.value)}
         onKeyDown={(e) => {
@@ -112,7 +120,7 @@ export function InteractiveDock({
             submit();
           }
         }}
-        placeholder="Describe what you want to build or type a command..."
+        placeholder="Describe what you want to build or type a command…"
         className="mb-4 w-full bg-transparent text-lg text-slate-900 outline-none placeholder:text-slate-400"
       />
 
