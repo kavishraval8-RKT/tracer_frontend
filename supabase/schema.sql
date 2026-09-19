@@ -10,9 +10,21 @@ create table if not exists public.profiles (
   stripe_customer_id text unique,
   stripe_subscription_id text,
   current_period_end timestamptz,
+  -- Single-plugin-per-user enforcement. The token endpoint mints a `jti`,
+  -- writes it here, and bakes it into the JWT payload. The Python backend
+  -- checks JWT.jti == profiles.active_device_jti on every request — a
+  -- second plugin activation rotates it, so the old plugin's next call
+  -- returns 401 and it prompts the user to re-link.
+  active_device_jti text,
+  active_device_linked_at timestamptz,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
+
+-- Backfill for existing installs of the schema.
+alter table public.profiles
+  add column if not exists active_device_jti text,
+  add column if not exists active_device_linked_at timestamptz;
 
 alter table public.profiles enable row level security;
 
@@ -68,3 +80,48 @@ create table if not exists public.contact_messages (
 
 alter table public.contact_messages enable row level security;
 -- waitlist and contact_messages have no policies: only the server (service role) can read or write them.
+
+-- OAuth 2.0 Device Authorization Grant (RFC 8628) — plugin ↔ web pairing.
+--   /api/device/code   → mints a row (device_code + user_code, pending)
+--   /activate page     → sets approved_user_id when the signed-in user confirms user_code
+--   /api/device/token  → the plugin polls; returns a device JWT once approved
+create table if not exists public.device_codes (
+  device_code text primary key,                    -- opaque, base64url ~43 chars
+  user_code text not null unique,                  -- 8-char, human-friendly (Crockford base32 minus IOLU)
+  created_at timestamptz not null default now(),
+  expires_at timestamptz not null,
+  poll_interval_seconds int not null default 5,
+  approved_user_id uuid references auth.users (id) on delete cascade,
+  approved_at timestamptz
+);
+
+create index if not exists idx_device_codes_user_code on public.device_codes (user_code);
+create index if not exists idx_device_codes_expires   on public.device_codes (expires_at);
+
+alter table public.device_codes enable row level security;
+-- No policies on purpose: all reads/writes happen through service-role routes
+-- (/api/device/*) and the /activate action. Ordinary users never touch this table
+-- directly through the public REST API.
+
+-- Per-request usage ledger for the LLM proxy. Python backend writes; web UI reads.
+create table if not exists public.usage_ledger (
+  id bigint generated always as identity primary key,
+  user_id uuid not null references auth.users (id) on delete cascade,
+  created_at timestamptz not null default now(),
+  endpoint text not null,                          -- '/v1/generate', '/v1/ask', '/v1/plan'
+  model text not null,                             -- 'gemini-2.5-pro' etc.
+  prompt_tokens bigint not null default 0,
+  completion_tokens bigint not null default 0,
+  status_code int not null default 200
+);
+
+create index if not exists idx_usage_ledger_user_created
+  on public.usage_ledger (user_id, created_at desc);
+
+alter table public.usage_ledger enable row level security;
+
+drop policy if exists "Users can read their own usage" on public.usage_ledger;
+create policy "Users can read their own usage"
+  on public.usage_ledger for select to authenticated
+  using ((select auth.uid()) = user_id);
+-- Writes come only from the Python backend using the service role key.

@@ -14,7 +14,7 @@ const field =
 export default function LoginPage() {
   // useSearchParams needs a Suspense boundary on prerendered routes; the fallback is the plan-less form.
   return (
-    <Suspense fallback={<LoginCard plan={null} billing="monthly" linkError={false} />}>
+    <Suspense fallback={<LoginCard plan={null} billing="monthly" linkError={false} next={null} />}>
       <LoginWithPlan />
     </Suspense>
   );
@@ -23,10 +23,28 @@ export default function LoginPage() {
 function LoginWithPlan() {
   const params = useSearchParams();
   const { plan, billing } = readPlan(params);
-  return <LoginCard plan={plan} billing={billing} linkError={params.get("error") === "confirm"} />;
+  const next = params.get("next");
+  return (
+    <LoginCard
+      plan={plan}
+      billing={billing}
+      linkError={params.get("error") === "confirm"}
+      next={next && next.startsWith("/") ? next : null}
+    />
+  );
 }
 
-function LoginCard({ plan, billing, linkError }: { plan: PaidPlanId | null; billing: Billing; linkError: boolean }) {
+function LoginCard({
+  plan,
+  billing,
+  linkError,
+  next,
+}: {
+  plan: PaidPlanId | null;
+  billing: Billing;
+  linkError: boolean;
+  next: string | null;
+}) {
   const [state, action, pending] = useActionState<FormState, FormData>(signIn, null);
   const chosen = plan ? PAID_PLANS[plan] : null;
   const error = state && !state.ok ? state.message : linkError ? "That confirmation link is invalid or has expired." : null;
@@ -48,6 +66,7 @@ function LoginCard({ plan, billing, linkError }: { plan: PaidPlanId | null; bill
               <input type="hidden" name="billing" value={billing} />
             </>
           )}
+          {next && <input type="hidden" name="next" value={next} />}
           <div>
             <label htmlFor="email" className="mb-2 block text-sm font-medium text-slate-700">
               Email

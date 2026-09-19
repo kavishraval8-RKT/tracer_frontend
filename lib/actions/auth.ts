@@ -4,7 +4,7 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { siteUrl, supabaseConfigured } from "@/lib/config";
 import { stringParams, type FormState } from "@/lib/forms";
-import { clientIp, email as parseEmail, looksAutomated, rateLimit, text } from "@/lib/guard";
+import { clientIp, email as parseEmail, looksAutomated, rateLimit, safeNextPath, text } from "@/lib/guard";
 import { planQuery, readPlan } from "@/lib/plans";
 import { createClient } from "@/lib/supabase/server";
 
@@ -31,7 +31,13 @@ export async function signUp(_prev: FormState, fd: FormData): Promise<FormState>
   if (password !== fd.get("confirmPassword")) return { ok: false, message: "Passwords don't match.", fields };
 
   const { plan, billing } = readPlan(stringParams(fd));
-  const next = `/billing${planQuery(plan, billing)}`;
+  // Prefer an explicit ?next= (e.g. /activate?code=…) if the register form
+  // forwarded one; otherwise fall through to the /billing plan-picker flow.
+  const nextParam = fd.get("next");
+  const next =
+    typeof nextParam === "string" && nextParam
+      ? safeNextPath(nextParam, `/billing${planQuery(plan, billing)}`)
+      : `/billing${planQuery(plan, billing)}`;
 
   const supabase = await createClient();
   const { data, error } = await supabase.auth.signUp({
@@ -68,6 +74,12 @@ export async function signIn(_prev: FormState, fd: FormData): Promise<FormState>
     return { ok: false, message, fields };
   }
 
+  // Honor ?next= (e.g. /activate?code=ABCD-1234) if the login form passed it
+  // as a hidden field; otherwise fall through to the existing /billing flow.
+  const nextParam = fd.get("next");
+  if (typeof nextParam === "string" && nextParam) {
+    redirect(safeNextPath(nextParam, "/billing"));
+  }
   const { plan, billing } = readPlan(stringParams(fd));
   redirect(`/billing${planQuery(plan, billing)}`);
 }
