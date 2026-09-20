@@ -7,7 +7,7 @@ import { signOut } from "@/lib/actions/auth";
 import { openPortal, startCheckout } from "@/lib/actions/billing";
 import { supabaseConfigured } from "@/lib/config";
 import { PAID_PLANS, readPlan, type Billing, type PaidPlanId } from "@/lib/plans";
-import { monthStartIso } from "@/lib/quotas";
+import { hoursAgoIso, TIER_SESSION_HOURS } from "@/lib/quotas";
 import { createClient } from "@/lib/supabase/server";
 import { UsageCard } from "./UsageCard";
 
@@ -96,20 +96,29 @@ export default async function BillingPage(props: PageProps<"/billing">) {
     .eq("id", user.id)
     .maybeSingle();
 
-  // Month-to-date usage from usage_ledger. RLS on that table lets each
-  // user read their own rows via their session, so we don't need the
-  // service role here. Aggregated in Node — hobby users write hundreds
-  // of rows/month at worst, so full-scan-then-sum is fine.
+  // Two rolling windows off usage_ledger. RLS on that table lets each
+  // user read their own rows via their session (no service role needed).
+  // Aggregated in Node — hobby users write hundreds of rows/week, so
+  // full-scan-then-sum is fine. Fetch the wider (7-day) window once and
+  // filter for the 5-hour session in-memory to save a roundtrip.
+  const weeklySinceIso = hoursAgoIso(7 * 24);
+  const sessionSinceIso = hoursAgoIso(TIER_SESSION_HOURS);
   const { data: ledgerRows } = await supabase
     .from("usage_ledger")
-    .select("endpoint, prompt_tokens, completion_tokens, status_code")
+    .select("endpoint, prompt_tokens, completion_tokens, status_code, created_at")
     .eq("user_id", user.id)
-    .gte("created_at", monthStartIso());
+    .gte("created_at", weeklySinceIso);
   const rows = ledgerRows ?? [];
-  const usedTokens = rows.reduce(
+  const weeklyUsedTokens = rows.reduce(
     (sum, r) => sum + (r.prompt_tokens ?? 0) + (r.completion_tokens ?? 0),
     0,
   );
+  const sessionUsedTokens = rows
+    .filter((r) => (r.created_at ?? "") >= sessionSinceIso)
+    .reduce(
+      (sum, r) => sum + (r.prompt_tokens ?? 0) + (r.completion_tokens ?? 0),
+      0,
+    );
   const byEndpoint = new Map<string, { tokens: number; requests: number }>();
   for (const r of rows) {
     const key = r.endpoint ?? "?";
@@ -180,7 +189,12 @@ export default async function BillingPage(props: PageProps<"/billing">) {
           </div>
         </section>
 
-        <UsageCard tier={plan} usedTokens={usedTokens} breakdown={breakdown} />
+        <UsageCard
+          tier={plan}
+          sessionUsedTokens={sessionUsedTokens}
+          weeklyUsedTokens={weeklyUsedTokens}
+          breakdown={breakdown}
+        />
 
         {!paid && (
           <section className={card}>

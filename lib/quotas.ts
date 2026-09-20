@@ -1,29 +1,41 @@
 /**
  * Tier quota constants — mirrored from backend/app/settings.py.
  *
- * If you change TIER_QUOTAS here, change it there too. A future
- * refactor might move quotas into a Supabase table so both sides
- * read from one source; for now the duplication is small enough to
- * keep hand-synced.
+ * Two-window model: every request has to fit under both a rolling
+ * 5-hour session cap AND a rolling 7-day weekly cap.
+ *
+ * Session limits prevent one user draining the shared free-tier
+ * Gemini pool in a burst; weekly limits set the per-plan ceiling.
+ *
+ * If you change these here, change backend/app/settings.py too.
  */
-export const TIER_QUOTAS = {
-  hobby: 200_000,
-  basic: 1_000_000,
-  pro: 10_000_000,
+export const TIER_SESSION_HOURS = 5;
+
+export const TIER_SESSION_QUOTAS = {
+  hobby: 30_000,
+  basic: 300_000,
+  pro: 1_300_000,
 } as const;
 
-export type Tier = keyof typeof TIER_QUOTAS;
+export const TIER_WEEKLY_QUOTAS = {
+  hobby: 100_000,
+  basic: 1_000_000,
+  pro: 4_000_000,
+} as const;
 
-export function quotaFor(tier: string): number {
-  return TIER_QUOTAS[tier as Tier] ?? TIER_QUOTAS.hobby;
+export type Tier = keyof typeof TIER_WEEKLY_QUOTAS;
+
+export function sessionQuotaFor(tier: string): number {
+  return TIER_SESSION_QUOTAS[tier as Tier] ?? TIER_SESSION_QUOTAS.hobby;
 }
 
-/** ISO timestamp for the first millisecond of the current UTC month. */
-export function monthStartIso(now = new Date()): string {
-  const d = new Date(now);
-  d.setUTCDate(1);
-  d.setUTCHours(0, 0, 0, 0);
-  return d.toISOString();
+export function weeklyQuotaFor(tier: string): number {
+  return TIER_WEEKLY_QUOTAS[tier as Tier] ?? TIER_WEEKLY_QUOTAS.hobby;
+}
+
+/** ISO timestamp for `hours` ago from now. */
+export function hoursAgoIso(hours: number, now = new Date()): string {
+  return new Date(now.getTime() - hours * 3_600_000).toISOString();
 }
 
 export function formatTokens(n: number): string {
