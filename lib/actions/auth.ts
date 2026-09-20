@@ -6,6 +6,7 @@ import { siteUrl, supabaseConfigured } from "@/lib/config";
 import { stringParams, type FormState } from "@/lib/forms";
 import { clientIp, email as parseEmail, looksAutomated, rateLimit, safeNextPath, text } from "@/lib/guard";
 import { planQuery, readPlan } from "@/lib/plans";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 
 const CHECK_EMAIL = "Check your email for a link to confirm your account.";
@@ -87,6 +88,20 @@ export async function signIn(_prev: FormState, fd: FormData): Promise<FormState>
 export async function signOut() {
   if (supabaseConfigured) {
     const supabase = await createClient();
+    // Revoke the linked plugin: clearing active_device_jti makes the
+    // Python backend's jti check fail on the plugin's next request,
+    // which returns 401 and drops the plugin back to signed-out.
+    // No update policy exists on profiles, so we need the admin client.
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      const admin = createAdminClient();
+      if (admin) {
+        await admin
+          .from("profiles")
+          .update({ active_device_jti: null, active_device_linked_at: null })
+          .eq("id", user.id);
+      }
+    }
     await supabase.auth.signOut();
   }
   redirect("/");
