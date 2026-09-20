@@ -7,7 +7,9 @@ import { signOut } from "@/lib/actions/auth";
 import { openPortal, startCheckout } from "@/lib/actions/billing";
 import { supabaseConfigured } from "@/lib/config";
 import { PAID_PLANS, readPlan, type Billing, type PaidPlanId } from "@/lib/plans";
+import { monthStartIso } from "@/lib/quotas";
 import { createClient } from "@/lib/supabase/server";
+import { UsageCard } from "./UsageCard";
 
 export const metadata: Metadata = {
   title: "Billing",
@@ -94,6 +96,32 @@ export default async function BillingPage(props: PageProps<"/billing">) {
     .eq("id", user.id)
     .maybeSingle();
 
+  // Month-to-date usage from usage_ledger. RLS on that table lets each
+  // user read their own rows via their session, so we don't need the
+  // service role here. Aggregated in Node — hobby users write hundreds
+  // of rows/month at worst, so full-scan-then-sum is fine.
+  const { data: ledgerRows } = await supabase
+    .from("usage_ledger")
+    .select("endpoint, prompt_tokens, completion_tokens, status_code")
+    .eq("user_id", user.id)
+    .gte("created_at", monthStartIso());
+  const rows = ledgerRows ?? [];
+  const usedTokens = rows.reduce(
+    (sum, r) => sum + (r.prompt_tokens ?? 0) + (r.completion_tokens ?? 0),
+    0,
+  );
+  const byEndpoint = new Map<string, { tokens: number; requests: number }>();
+  for (const r of rows) {
+    const key = r.endpoint ?? "?";
+    const cur = byEndpoint.get(key) ?? { tokens: 0, requests: 0 };
+    cur.tokens += (r.prompt_tokens ?? 0) + (r.completion_tokens ?? 0);
+    cur.requests += 1;
+    byEndpoint.set(key, cur);
+  }
+  const breakdown = [...byEndpoint.entries()]
+    .map(([endpoint, v]) => ({ endpoint, tokens: v.tokens, requests: v.requests }))
+    .sort((a, b) => b.tokens - a.tokens);
+
   const plan = (profile?.plan ?? "hobby") as "hobby" | PaidPlanId;
   const billing = (profile?.billing ?? "monthly") as Billing;
   const paid = plan !== "hobby";
@@ -151,6 +179,8 @@ export default async function BillingPage(props: PageProps<"/billing">) {
             </Link>
           </div>
         </section>
+
+        <UsageCard tier={plan} usedTokens={usedTokens} breakdown={breakdown} />
 
         {!paid && (
           <section className={card}>
